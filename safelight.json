@@ -1,0 +1,14 @@
+{
+  "id": "safelight.folders",
+  "name": "Folders",
+  "version": "1.0.0",
+  "description": "Project folder tree.",
+  "author": "Anthony Reimche",
+  "main": "dist/index.js",
+  "license": "GPL-3.0-only",
+  "categories": ["library"],
+  "keywords": ["folders", "folder tree", "project", "organise", "move", "rename"],
+  "repository": "anthonyreimche/Folders",
+  "worksWith": ["anthonyreimche/Library"],
+  "minAppVersion": "3.2.0"
+}
