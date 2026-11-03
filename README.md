@@ -34,6 +34,6 @@ Safelight hands the extension its own React through `api.react`, so the
 bundle never includes React. `src/safelight.d.ts` mirrors the part of the
 app's extension API the extension uses.
 
-## License
+## Licence
 
 GPL-3.0-only with an attribution term (GPL v3 §7b), the same licence as Safelight; see LICENSE. Copyright (C) 2026 Anthony Reimche.
