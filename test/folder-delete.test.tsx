@@ -1,7 +1,7 @@
 // Deleting a folder from the Folders panel removes it from disk and its photos
-// from the catalog, so it asks first through the app's confirm dialog, and a
+// from the catalogue, so it asks first through the app's confirm dialogue, and a
 // cancelled answer must leave both alone. Ported from core's
-// folder-delete.test.tsx; the disk and catalog work is core's deleteFolder, so
+// folder-delete.test.tsx; the disk and catalogue work is core's deleteFolder, so
 // the seam here is api.project.deleteFolder.
 
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
@@ -25,13 +25,13 @@ async function answer(rig: Rig, confirmed: boolean): Promise<void> {
 }
 
 describe("Folders panel: delete folder", () => {
-  it("asks in the app's dialog, as a destructive action", () => {
+  it("asks in the app's dialogue, as a destructive action", () => {
     const rig = askToDelete();
     expect(rig.confirms.map((c) => c.options)).toEqual([
       {
         title: "Delete folder",
         message:
-          'Delete the folder "trip" and everything inside it from disk, and remove its photos from the catalog? This can\'t be undone.',
+          'Delete the folder "trip" and everything inside it from disk, and remove its photos from the catalogue? This can\'t be undone.',
         confirmLabel: "Delete",
         variant: "danger",
       },

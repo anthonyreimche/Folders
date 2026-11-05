@@ -1,7 +1,7 @@
 {
   "id": "safelight.folders",
   "name": "Folders",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Project folder tree.",
   "author": "Anthony Reimche",
   "main": "dist/index.js",

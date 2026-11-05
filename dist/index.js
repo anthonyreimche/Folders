@@ -106,7 +106,7 @@ function u({ node: e, depth: r, label: a, ctx: s, expanded: c, onToggle: l }) {
 	}, v = async () => {
 		await n.ui.confirmDialog({
 			title: "Delete folder",
-			message: `Delete the folder "${e.name}" and everything inside it from disk, and remove its photos from the catalog? This can't be undone.`,
+			message: `Delete the folder "${e.name}" and everything inside it from disk, and remove its photos from the catalogue? This can't be undone.`,
 			confirmLabel: "Delete",
 			variant: "danger"
 		}) && n.project.deleteFolder(e.path);

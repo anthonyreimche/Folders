@@ -183,7 +183,7 @@ function FolderRow({
   const handleDelete = async () => {
     const ok = await api.ui.confirmDialog({
       title: "Delete folder",
-      message: `Delete the folder "${node.name}" and everything inside it from disk, and remove its photos from the catalog? This can't be undone.`,
+      message: `Delete the folder "${node.name}" and everything inside it from disk, and remove its photos from the catalogue? This can't be undone.`,
       confirmLabel: "Delete",
       variant: "danger",
     });

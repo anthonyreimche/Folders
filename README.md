@@ -10,7 +10,7 @@ The Library **Folders** panel: the open project's folder tree.
   pointer is over a row. A new subfolder starts as "Untitled Folder", ready to
   be renamed; Enter or clicking away keeps the name, Escape cancels. Delete
   asks first: it removes the folder and everything in it from disk, and its
-  photos from the catalog.
+  photos from the catalogue.
 - **Drag and drop:** drop photos from the grid onto a folder to move them
   there, or drag a folder onto another to move it inside.
 

@@ -58,7 +58,7 @@ export interface ConfirmDialogOptions {
 
 /** The project folder's tree, as the Folders panel edits it. Paths are
  *  relative to the project root ("" is the root). Each operation moves the
- *  files on disk and updates the catalog and the tree. */
+ *  files on disk and updates the catalogue and the tree. */
 export interface ProjectAPI {
   /** Create a subfolder under `parentRel`. Returns its relative path, or null. */
   createFolder(parentRel: string, name: string): Promise<string | null>;
@@ -66,9 +66,9 @@ export interface ProjectAPI {
   renameFolder(rel: string, newName: string): Promise<void>;
   /** Move a folder into `destParentRel`. */
   moveFolder(srcRel: string, destParentRel: string): Promise<void>;
-  /** Move photos (by catalog id) into the folder `destRel`. */
+  /** Move photos (by catalogue id) into the folder `destRel`. */
   movePhotos(ids: string[], destRel: string): Promise<void>;
-  /** Delete a folder from disk and its photos from the catalog. No-op for the root. */
+  /** Delete a folder from disk and its photos from the catalogue. No-op for the root. */
   deleteFolder(rel: string): Promise<void>;
 }
 
@@ -116,7 +116,7 @@ export interface SafelightAPI {
   registerStylesheet(c: StylesheetContribution): void;
   ui: {
     tokens: UiTokens;
-    /** Ask in the app's own dialog card; resolves true on confirm. */
+    /** Ask in the app's own dialogue card; resolves true on confirm. */
     confirmDialog(options: ConfirmDialogOptions): Promise<boolean>;
   };
   stores: {
