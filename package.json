@@ -1,7 +1,7 @@
 {
   "name": "safelight-folders",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Folders extension for Safelight: the project folder tree, with folder create, rename, move and delete.",
   "type": "module",
   "scripts": {

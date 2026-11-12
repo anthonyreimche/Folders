@@ -17,6 +17,12 @@ The Library **Folders** panel: the open project's folder tree.
 Every change happens on disk. Ratings, edits and cached previews follow the
 photos.
 
+**Web folders** (Safelight 3.2.4 and later): photos an extension brings in
+from a server, such as Immich albums with **Immich Web Folders**, show as a
+row under the tree. Click it to open them like a folder: the server's albums
+become the tree. Nothing on the server can be changed from here, so the tree
+then offers no new folder, rename, delete or drag and drop.
+
 Until Safelight 3.2.0 this panel was built in. It keeps the built-in panel's
 id (`core.folders`), so layouts saved before then keep it where it was.
 

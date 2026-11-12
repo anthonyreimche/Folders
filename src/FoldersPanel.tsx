@@ -5,12 +5,14 @@
 
 // The Library "Folders" panel: the open project's folder tree and Open Folder.
 // Rows select the folder the grid shows, take photo and folder drops, and
-// offer new subfolder, rename and delete.
+// offer new subfolder, rename and delete. Library sources (Safelight 3.2.4:
+// photos on a server, opened like a folder) are rows of the same look below the
+// tree; an open source's folders are the tree, which then changes nothing.
 
 import type { DragEvent } from "react";
 import { uniqueFolderName } from "./folder-names";
 import { React, api } from "./rt";
-import type { FolderNode, UiTokens } from "./safelight";
+import type { FolderNode, LibrarySourceEntry, UiTokens } from "./safelight";
 
 // Drag payload MIME types. Photos carry a JSON id array; a folder carries its
 // relative path. Custom types so folder rows only accept our own drags.
@@ -68,8 +70,12 @@ html.sl-larger-text .${c.empty}, html.sl-larger-text .${c.open}, html.sl-larger-
 `;
 }
 
+const NO_SOURCES: LibrarySourceEntry[] = [];
+
 // Shared row behaviour threaded down the folder tree.
 interface FolderTreeCtx {
+  /** The open project is a library source: nothing in it can be changed. */
+  readOnly: boolean;
   activeFolder: string | null;
   onSelect: (path: string) => void;
   editing: string | null;
@@ -85,6 +91,9 @@ export function FoldersPanel() {
   const tree = useProjectStore((s) => s.tree);
   const opening = useProjectStore((s) => s.opening);
   const openProjectPicker = useProjectStore((s) => s.openProjectPicker);
+  // Absent before Safelight 3.2.4; the same on every render, so the hooks keep their order.
+  const sources = (api.library?.useSources ?? (() => NO_SOURCES))();
+  const openSource = (api.library?.useOpenSource ?? (() => null))();
 
   // relPath of the folder being renamed inline (null = none).
   const [editing, setEditing] = React.useState<string | null>(null);
@@ -97,6 +106,7 @@ export function FoldersPanel() {
   };
 
   const ctx: FolderTreeCtx = {
+    readOnly: openSource !== null,
     activeFolder,
     onSelect: setActiveFolder,
     editing,
@@ -119,6 +129,22 @@ export function FoldersPanel() {
           .safelight working directory inside it.
         </p>
       )}
+      {sources
+        .filter((source) => !source.open)
+        .map((source) => (
+          <div
+            key={source.id}
+            title={`Open ${source.name}`}
+            onClick={() => {
+              if (!opening) void api.library?.openSource?.(source.id);
+            }}
+            style={{ paddingLeft: 8 }}
+            className={`${CLASS.row} ${CLASS.rowIdle}`}
+          >
+            <span className={CLASS.spacer} />
+            <span className={CLASS.name}>{source.name}</span>
+          </div>
+        ))}
       <button onClick={() => void openProjectPicker()} disabled={opening} className={CLASS.open}>
         {opening ? "Opening…" : "Open Folder…"}
       </button>
@@ -191,6 +217,7 @@ function FolderRow({
   };
 
   const handleDrop = (e: DragEvent) => {
+    if (ctx.readOnly) return;
     e.preventDefault();
     e.stopPropagation();
     setDragOver(false);
@@ -207,14 +234,14 @@ function FolderRow({
 
   return (
     <div
-      draggable={!isRoot && !isEditing}
+      draggable={!isRoot && !isEditing && !ctx.readOnly}
       onDragStart={(e) => {
         e.dataTransfer.setData(DND_FOLDER, node.path);
         e.dataTransfer.effectAllowed = "move";
       }}
       onDragOver={(e) => {
         const t = e.dataTransfer.types;
-        if (t.includes(DND_PHOTOS) || t.includes(DND_FOLDER)) {
+        if (!ctx.readOnly && (t.includes(DND_PHOTOS) || t.includes(DND_FOLDER))) {
           e.preventDefault();
           e.dataTransfer.dropEffect = "move";
           if (!dragOver) setDragOver(true);
@@ -261,7 +288,13 @@ function FolderRow({
         <span className={CLASS.name}>{label ?? node.name}</span>
       )}
 
-      {!isEditing && (
+      {ctx.readOnly ? (
+        node.count > 0 && (
+          <div className={CLASS.actions}>
+            <span className={CLASS.count}>{node.count}</span>
+          </div>
+        )
+      ) : !isEditing && (
         <div className={CLASS.actions}>
           <button
             title="New subfolder"

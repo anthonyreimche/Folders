@@ -72,6 +72,26 @@ export interface ProjectAPI {
   deleteFolder(rel: string): Promise<void>;
 }
 
+/** A library source (photos kept on a server, say) as api.library lists it.
+ *  Safelight 3.2.4 and later. */
+export interface LibrarySourceEntry {
+  id: string;
+  name: string;
+  extensionId: string;
+  /** Whether it is the project open now. */
+  open: boolean;
+}
+
+/** The library-source members of api.library; absent before Safelight 3.2.4. */
+export interface LibrarySourcesAPI {
+  /** React hook: every registered source. */
+  useSources?(): LibrarySourceEntry[];
+  /** Open a source as the project, as Open Folder opens a folder. */
+  openSource?(id: string): Promise<void>;
+  /** React hook: the source the open project is, or null for a folder. */
+  useOpenSource?(): { id: string; name: string } | null;
+}
+
 export interface PanelDockDefault {
   module: "library" | "develop";
   direction: "left" | "right" | "bottom";
@@ -124,6 +144,7 @@ export interface SafelightAPI {
     useProjectStore: StoreApi<ProjectStoreState>;
   };
   project: ProjectAPI;
+  library?: LibrarySourcesAPI;
 }
 
 export interface ExtensionModule {
