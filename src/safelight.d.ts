@@ -10,7 +10,7 @@
 // standalone bundles, so the host's source is not on the type path; React types
 // come from @types/react (dev only).
 
-import type { ComponentType } from "react";
+import type { ButtonHTMLAttributes, ComponentType, InputHTMLAttributes, JSX } from "react";
 
 export interface StoreApi<T> {
   (): T;
@@ -128,6 +128,22 @@ export interface UiTokens {
   readonly labelRed: string;
 }
 
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant;
+  size?: "sm" | "md";
+  /** Render as the selected/active state (accent fill), overriding the variant. */
+  active?: boolean;
+  /** Stretch to the container width. */
+  full?: boolean;
+}
+
+export interface TextInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "onChange" | "value"> {
+  value: string;
+  onChange: (value: string) => void;
+}
+
 export interface SafelightAPI {
   version: 1;
   extensionId: string;
@@ -136,6 +152,8 @@ export interface SafelightAPI {
   registerStylesheet(c: StylesheetContribution): void;
   ui: {
     tokens: UiTokens;
+    Button: (props: ButtonProps) => JSX.Element;
+    TextInput: (props: TextInputProps) => JSX.Element;
     /** Ask in the app's own dialogue card; resolves true on confirm. */
     confirmDialog(options: ConfirmDialogOptions): Promise<boolean>;
   };

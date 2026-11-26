@@ -15,7 +15,6 @@ function r(e) {
 var i = "application/x-safelight-folder", a = "safelight-folders", o = {
 	panel: a,
 	empty: `${a}-empty`,
-	open: `${a}-open`,
 	row: `${a}-row`,
 	rowIdle: `${a}-row-idle`,
 	rowActive: `${a}-row-active`,
@@ -34,62 +33,59 @@ function s(e) {
 	return `
 :where(.${t.panel}) { display: flex; flex-direction: column; gap: 0.25rem; padding: 0.5rem; }
 :where(.${t.empty}) { padding: 0.25rem 0.5rem; font-size: 11px; color: ${e.textMuted}; }
-:where(.${t.open}) { width: 100%; border-radius: 0.25rem; background-color: ${e.surface2}; padding: 0.25rem 0.5rem; text-align: left; font-size: 11px; color: ${e.textSecondary}; }
-@media (hover: hover) { :where(.${t.open}:hover) { background-color: ${e.surface3}; color: ${e.textPrimary}; } }
-:where(.${t.open}:disabled) { opacity: 0.5; }
 :where(.${t.row}) { display: flex; cursor: pointer; align-items: center; gap: 0.25rem; border-radius: 0.25rem; padding-block: 0.25rem; padding-right: 0.25rem; font-size: 11px; }
 :where(.${t.rowDragOver}) { background-color: color-mix(in oklab, ${e.accent} 20%, transparent); box-shadow: 0 0 0 1px ${e.accent}; }
 :where(.${t.rowActive}) { background-color: ${e.surface3}; color: ${e.textPrimary}; }
 :where(.${t.rowIdle}) { color: ${e.textSecondary}; }
 @media (hover: hover) { :where(.${t.rowIdle}:hover) { background-color: ${e.surface2}; color: ${e.textPrimary}; } }
-:where(.${t.toggle}) { width: 0.75rem; flex-shrink: 0; color: ${e.textMuted}; }
-@media (hover: hover) { :where(.${t.toggle}:hover) { color: ${e.textPrimary}; } }
+:where(.${t.toggle}) { flex-shrink: 0; }
 :where(.${t.spacer}) { width: 0.75rem; flex-shrink: 0; }
 :where(.${t.name}) { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-:where(.${t.nameInput}) { min-width: 0; flex: 1; border-radius: 0.25rem; background-color: ${e.surface1}; padding-inline: 0.25rem; font-size: 11px; color: ${e.textPrimary}; outline-style: none; box-shadow: 0 0 0 1px ${e.accent}; }
+:where(.${t.nameInput}) { min-width: 0; flex: 1; }
 :where(.${t.actions}) { display: flex; flex-shrink: 0; align-items: center; gap: 0.125rem; }
-:where(.${t.action}) { display: none; width: 1rem; color: ${e.textMuted}; }
-@media (hover: hover) { :where(.${t.row}:hover .${t.action}) { display: block; } :where(.${t.action}:hover) { color: ${e.textPrimary}; } :where(.${t.actionDanger}:hover) { color: ${e.labelRed}; } }
+:where(.${t.action}) { display: none; }
+@media (hover: hover) { :where(.${t.row}:hover .${t.action}) { display: inline-flex; } :where(.${t.actionDanger}:hover) { color: ${e.labelRed}; } }
 :where(.${t.count}) { margin-left: 0.125rem; color: ${e.textMuted}; }
-html.sl-larger-text .${t.empty}, html.sl-larger-text .${t.open}, html.sl-larger-text .${t.row}, html.sl-larger-text .${t.nameInput} { font-size: 13px !important; line-height: 1.45 !important; }
+html.sl-larger-text .${t.empty}, html.sl-larger-text .${t.row} { font-size: 13px !important; line-height: 1.45 !important; }
 `;
 }
 var c = [];
 function l() {
-	let { useUIStore: r, useProjectStore: i } = n.stores, a = r((e) => e.activeFolder), s = r((e) => e.setActiveFolder), l = i((e) => e.name), f = i((e) => e.tree), p = i((e) => e.opening), m = i((e) => e.openProjectPicker), h = (n.library?.useSources ?? (() => c))(), g = (n.library?.useOpenSource ?? (() => null))(), [_, v] = t.useState(null), y = {
-		readOnly: g !== null,
-		activeFolder: a,
-		onSelect: s,
-		editing: _,
-		setEditing: v,
+	let { Button: r } = n.ui, { useUIStore: i, useProjectStore: a } = n.stores, s = i((e) => e.activeFolder), l = i((e) => e.setActiveFolder), f = a((e) => e.name), p = a((e) => e.tree), m = a((e) => e.opening), h = a((e) => e.openProjectPicker), g = (n.library?.useSources ?? (() => c))(), _ = (n.library?.useOpenSource ?? (() => null))(), [v, y] = t.useState(null), b = {
+		readOnly: _ !== null,
+		activeFolder: s,
+		onSelect: l,
+		editing: v,
+		setEditing: y,
 		onNewFolder: async (t) => {
 			let r = e(t.children.map((e) => e.name)), i = await n.project.createFolder(t.path, r);
-			i && v(i);
+			i && y(i);
 		}
 	};
-	return /* @__PURE__ */ t.createElement("div", { className: o.panel }, f ? /* @__PURE__ */ t.createElement(t.Fragment, null, /* @__PURE__ */ t.createElement(d, {
-		node: f,
+	return /* @__PURE__ */ t.createElement("div", { className: o.panel }, p ? /* @__PURE__ */ t.createElement(t.Fragment, null, /* @__PURE__ */ t.createElement(d, {
+		node: p,
 		depth: 0,
-		label: l || f.name,
-		ctx: y
-	}), f.children.map((e) => /* @__PURE__ */ t.createElement(u, {
+		label: f || p.name,
+		ctx: b
+	}), p.children.map((e) => /* @__PURE__ */ t.createElement(u, {
 		key: e.path,
 		node: e,
 		depth: 1,
-		ctx: y
-	}))) : /* @__PURE__ */ t.createElement("p", { className: o.empty }, "Open a folder to start — its images are decoded and cached in a .safelight working directory inside it."), h.filter((e) => !e.open).map((e) => /* @__PURE__ */ t.createElement("div", {
+		ctx: b
+	}))) : /* @__PURE__ */ t.createElement("p", { className: o.empty }, "Open a folder to start — its images are decoded and cached in a .safelight working directory inside it."), g.filter((e) => !e.open).map((e) => /* @__PURE__ */ t.createElement("div", {
 		key: e.id,
 		title: `Open ${e.name}`,
 		onClick: () => {
-			p || n.library?.openSource?.(e.id);
+			m || n.library?.openSource?.(e.id);
 		},
 		style: { paddingLeft: 8 },
 		className: `${o.row} ${o.rowIdle}`
-	}, /* @__PURE__ */ t.createElement("span", { className: o.spacer }), /* @__PURE__ */ t.createElement("span", { className: o.name }, e.name))), /* @__PURE__ */ t.createElement("button", {
-		onClick: () => void m(),
-		disabled: p,
-		className: o.open
-	}, p ? "Opening…" : "Open Folder…"));
+	}, /* @__PURE__ */ t.createElement("span", { className: o.spacer }), /* @__PURE__ */ t.createElement("span", { className: o.name }, e.name))), /* @__PURE__ */ t.createElement(r, {
+		full: !0,
+		size: "sm",
+		onClick: () => void h(),
+		disabled: m
+	}, m ? "Opening…" : "Open Folder…"));
 }
 function u({ node: e, depth: n, ctx: r }) {
 	let [i, a] = t.useState(!0);
@@ -107,22 +103,22 @@ function u({ node: e, depth: n, ctx: r }) {
 	})));
 }
 function d({ node: e, depth: r, label: a, ctx: s, expanded: c, onToggle: l }) {
-	let u = s.activeFolder === e.path, d = e.path === "", f = s.editing === e.path, [p, m] = t.useState(!1), h = t.useRef(null), g = t.useRef(!1);
+	let { Button: u, TextInput: d } = n.ui, f = s.activeFolder === e.path, p = e.path === "", m = s.editing === e.path, [h, g] = t.useState(!1), _ = t.useRef(!1), [v, y] = t.useState(e.name);
 	t.useEffect(() => {
-		f && h.current?.select();
-	}, [f]);
-	let _ = (t) => {
-		s.setEditing(null), g.current ? g.current = !1 : n.project.renameFolder(e.path, t);
-	}, v = async () => {
+		m && y(e.name);
+	}, [m, e.name]);
+	let b = (t) => {
+		s.setEditing(null), _.current ? _.current = !1 : n.project.renameFolder(e.path, t);
+	}, x = async () => {
 		await n.ui.confirmDialog({
 			title: "Delete folder",
 			message: `Delete the folder "${e.name}" and everything inside it from disk, and remove its photos from the catalogue? This can't be undone.`,
 			confirmLabel: "Delete",
 			variant: "danger"
 		}) && n.project.deleteFolder(e.path);
-	}, y = (t) => {
+	}, S = (t) => {
 		if (s.readOnly) return;
-		t.preventDefault(), t.stopPropagation(), m(!1);
+		t.preventDefault(), t.stopPropagation(), g(!1);
 		let r = t.dataTransfer.getData("application/x-safelight-photos");
 		if (r) {
 			n.project.movePhotos(JSON.parse(r), e.path);
@@ -130,55 +126,64 @@ function d({ node: e, depth: r, label: a, ctx: s, expanded: c, onToggle: l }) {
 		}
 		let a = t.dataTransfer.getData(i);
 		a && n.project.moveFolder(a, e.path);
-	}, b = p ? o.rowDragOver : u ? o.rowActive : o.rowIdle;
+	}, C = h ? o.rowDragOver : f ? o.rowActive : o.rowIdle;
 	return /* @__PURE__ */ t.createElement("div", {
-		draggable: !d && !f && !s.readOnly,
+		draggable: !p && !m && !s.readOnly,
 		onDragStart: (t) => {
 			t.dataTransfer.setData(i, e.path), t.dataTransfer.effectAllowed = "move";
 		},
 		onDragOver: (e) => {
 			let t = e.dataTransfer.types;
-			!s.readOnly && (t.includes("application/x-safelight-photos") || t.includes("application/x-safelight-folder")) && (e.preventDefault(), e.dataTransfer.dropEffect = "move", p || m(!0));
+			!s.readOnly && (t.includes("application/x-safelight-photos") || t.includes("application/x-safelight-folder")) && (e.preventDefault(), e.dataTransfer.dropEffect = "move", h || g(!0));
 		},
-		onDragLeave: () => m(!1),
-		onDrop: y,
+		onDragLeave: () => g(!1),
+		onDrop: S,
 		onClick: () => s.onSelect(e.path),
 		style: { paddingLeft: 8 + r * 12 },
-		className: `${o.row} ${b}`
-	}, c === void 0 ? /* @__PURE__ */ t.createElement("span", { className: o.spacer }) : /* @__PURE__ */ t.createElement("button", {
+		className: `${o.row} ${C}`
+	}, c === void 0 ? /* @__PURE__ */ t.createElement("span", { className: o.spacer }) : /* @__PURE__ */ t.createElement(u, {
+		variant: "ghost",
+		size: "sm",
 		onClick: (e) => {
 			e.stopPropagation(), l?.();
 		},
 		className: o.toggle
-	}, c ? "▾" : "▸"), f ? /* @__PURE__ */ t.createElement("input", {
-		ref: h,
-		defaultValue: e.name,
+	}, c ? "▾" : "▸"), m ? /* @__PURE__ */ t.createElement(d, {
+		value: v,
+		onChange: y,
 		autoFocus: !0,
+		onFocus: (e) => e.currentTarget.select(),
 		"aria-label": "Folder name",
 		onClick: (e) => e.stopPropagation(),
 		onKeyDown: (e) => {
-			e.key === "Enter" ? e.currentTarget.blur() : e.key === "Escape" && (g.current = !0, e.currentTarget.blur());
+			e.key === "Enter" ? e.currentTarget.blur() : e.key === "Escape" && (_.current = !0, e.currentTarget.blur());
 		},
-		onBlur: (e) => _(e.currentTarget.value),
+		onBlur: (e) => b(e.currentTarget.value),
 		className: o.nameInput
-	}) : /* @__PURE__ */ t.createElement("span", { className: o.name }, a ?? e.name), s.readOnly ? e.count > 0 && /* @__PURE__ */ t.createElement("div", { className: o.actions }, /* @__PURE__ */ t.createElement("span", { className: o.count }, e.count)) : !f && /* @__PURE__ */ t.createElement("div", { className: o.actions }, /* @__PURE__ */ t.createElement("button", {
+	}) : /* @__PURE__ */ t.createElement("span", { className: o.name }, a ?? e.name), s.readOnly ? e.count > 0 && /* @__PURE__ */ t.createElement("div", { className: o.actions }, /* @__PURE__ */ t.createElement("span", { className: o.count }, e.count)) : !m && /* @__PURE__ */ t.createElement("div", { className: o.actions }, /* @__PURE__ */ t.createElement(u, {
+		variant: "ghost",
+		size: "sm",
 		title: "New subfolder",
 		onClick: (t) => {
 			t.stopPropagation(), s.onNewFolder(e);
 		},
 		className: o.action
-	}, "+"), !d && /* @__PURE__ */ t.createElement(t.Fragment, null, /* @__PURE__ */ t.createElement("button", {
+	}, "+"), !p && /* @__PURE__ */ t.createElement(t.Fragment, null, /* @__PURE__ */ t.createElement(u, {
+		variant: "ghost",
+		size: "sm",
 		title: "Rename folder",
 		onClick: (t) => {
 			t.stopPropagation(), s.setEditing(e.path);
 		},
 		"aria-label": "Rename folder",
 		className: o.action
-	}, "✎"), /* @__PURE__ */ t.createElement("button", {
+	}, "✎"), /* @__PURE__ */ t.createElement(u, {
+		variant: "ghost",
+		size: "sm",
 		title: "Delete folder",
 		"aria-label": "Delete folder",
 		onClick: (e) => {
-			e.stopPropagation(), v();
+			e.stopPropagation(), x();
 		},
 		className: `${o.action} ${o.actionDanger}`
 	}, "🗑")), e.count > 0 && /* @__PURE__ */ t.createElement("span", { className: o.count }, e.count)));

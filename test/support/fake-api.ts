@@ -8,6 +8,7 @@
 import * as React from "react";
 import { create } from "zustand";
 import type {
+  ButtonProps,
   ConfirmDialogOptions,
   FolderNode,
   PanelContribution,
@@ -15,6 +16,7 @@ import type {
   SafelightAPI,
   StoreApi,
   StylesheetContribution,
+  TextInputProps,
   UIStoreState,
   UiTokens,
 } from "../../src/safelight";
@@ -29,6 +31,14 @@ export const TOKENS: UiTokens = {
   accent: "var(--color-accent)",
   labelRed: "var(--color-label-red)",
 };
+
+function Button({ variant = "secondary", size = "md", full: _full, active: _active, ...rest }: ButtonProps) {
+  return React.createElement("button", { type: "button", "data-kit": "button", "data-kit-variant": variant, "data-kit-size": size, ...rest });
+}
+
+function TextInput({ value, onChange, ...rest }: TextInputProps) {
+  return React.createElement("input", { "data-kit": "text-input", value, onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value), ...rest });
+}
 
 export type ProjectCall =
   | { op: "createFolder"; parentRel: string; name: string }
@@ -118,6 +128,8 @@ export function fakeApi({ name = "pics", tree = null, activeFolder = null, openi
     registerStylesheet: (c) => void stylesheets.push(c),
     ui: {
       tokens: TOKENS,
+      Button,
+      TextInput,
       confirmDialog: (options) => new Promise<boolean>((resolve) => void confirms.push({ options, resolve })),
     },
     stores: { useUIStore: ui, useProjectStore: project },

@@ -24,7 +24,6 @@ const P = "safelight-folders";
 export const CLASS = {
   panel: P,
   empty: `${P}-empty`,
-  open: `${P}-open`,
   row: `${P}-row`,
   rowIdle: `${P}-row-idle`,
   rowActive: `${P}-row-active`,
@@ -49,24 +48,20 @@ export function foldersCss(t: UiTokens): string {
   return `
 :where(.${c.panel}) { display: flex; flex-direction: column; gap: 0.25rem; padding: 0.5rem; }
 :where(.${c.empty}) { padding: 0.25rem 0.5rem; font-size: 11px; color: ${t.textMuted}; }
-:where(.${c.open}) { width: 100%; border-radius: 0.25rem; background-color: ${t.surface2}; padding: 0.25rem 0.5rem; text-align: left; font-size: 11px; color: ${t.textSecondary}; }
-@media (hover: hover) { :where(.${c.open}:hover) { background-color: ${t.surface3}; color: ${t.textPrimary}; } }
-:where(.${c.open}:disabled) { opacity: 0.5; }
 :where(.${c.row}) { display: flex; cursor: pointer; align-items: center; gap: 0.25rem; border-radius: 0.25rem; padding-block: 0.25rem; padding-right: 0.25rem; font-size: 11px; }
 :where(.${c.rowDragOver}) { background-color: color-mix(in oklab, ${t.accent} 20%, transparent); box-shadow: 0 0 0 1px ${t.accent}; }
 :where(.${c.rowActive}) { background-color: ${t.surface3}; color: ${t.textPrimary}; }
 :where(.${c.rowIdle}) { color: ${t.textSecondary}; }
 @media (hover: hover) { :where(.${c.rowIdle}:hover) { background-color: ${t.surface2}; color: ${t.textPrimary}; } }
-:where(.${c.toggle}) { width: 0.75rem; flex-shrink: 0; color: ${t.textMuted}; }
-@media (hover: hover) { :where(.${c.toggle}:hover) { color: ${t.textPrimary}; } }
+:where(.${c.toggle}) { flex-shrink: 0; }
 :where(.${c.spacer}) { width: 0.75rem; flex-shrink: 0; }
 :where(.${c.name}) { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-:where(.${c.nameInput}) { min-width: 0; flex: 1; border-radius: 0.25rem; background-color: ${t.surface1}; padding-inline: 0.25rem; font-size: 11px; color: ${t.textPrimary}; outline-style: none; box-shadow: 0 0 0 1px ${t.accent}; }
+:where(.${c.nameInput}) { min-width: 0; flex: 1; }
 :where(.${c.actions}) { display: flex; flex-shrink: 0; align-items: center; gap: 0.125rem; }
-:where(.${c.action}) { display: none; width: 1rem; color: ${t.textMuted}; }
-@media (hover: hover) { :where(.${c.row}:hover .${c.action}) { display: block; } :where(.${c.action}:hover) { color: ${t.textPrimary}; } :where(.${c.actionDanger}:hover) { color: ${t.labelRed}; } }
+:where(.${c.action}) { display: none; }
+@media (hover: hover) { :where(.${c.row}:hover .${c.action}) { display: inline-flex; } :where(.${c.actionDanger}:hover) { color: ${t.labelRed}; } }
 :where(.${c.count}) { margin-left: 0.125rem; color: ${t.textMuted}; }
-html.sl-larger-text .${c.empty}, html.sl-larger-text .${c.open}, html.sl-larger-text .${c.row}, html.sl-larger-text .${c.nameInput} { font-size: 13px !important; line-height: 1.45 !important; }
+html.sl-larger-text .${c.empty}, html.sl-larger-text .${c.row} { font-size: 13px !important; line-height: 1.45 !important; }
 `;
 }
 
@@ -84,6 +79,7 @@ interface FolderTreeCtx {
 }
 
 export function FoldersPanel() {
+  const { Button } = api.ui;
   const { useUIStore, useProjectStore } = api.stores;
   const activeFolder = useUIStore((s) => s.activeFolder);
   const setActiveFolder = useUIStore((s) => s.setActiveFolder);
@@ -145,9 +141,9 @@ export function FoldersPanel() {
             <span className={CLASS.name}>{source.name}</span>
           </div>
         ))}
-      <button onClick={() => void openProjectPicker()} disabled={opening} className={CLASS.open}>
+      <Button full size="sm" onClick={() => void openProjectPicker()} disabled={opening}>
         {opening ? "Opening…" : "Open Folder…"}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -184,16 +180,18 @@ function FolderRow({
   expanded?: boolean;
   onToggle?: () => void;
 }) {
+  const { Button, TextInput } = api.ui;
   const isActive = ctx.activeFolder === node.path;
   const isRoot = node.path === "";
   const isEditing = ctx.editing === node.path;
   const [dragOver, setDragOver] = React.useState(false);
-  const inputRef = React.useRef<HTMLInputElement>(null);
   const cancelRef = React.useRef(false);
 
+  const [draft, setDraft] = React.useState(node.name);
+
   React.useEffect(() => {
-    if (isEditing) inputRef.current?.select();
-  }, [isEditing]);
+    if (isEditing) setDraft(node.name);
+  }, [isEditing, node.name]);
 
   // Single commit path: Enter/Escape just blur the input, and onBlur decides
   // whether to apply (avoids renaming twice off the now-stale path).
@@ -254,7 +252,9 @@ function FolderRow({
       className={`${CLASS.row} ${state}`}
     >
       {expanded !== undefined ? (
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={(e) => {
             e.stopPropagation();
             onToggle?.();
@@ -262,16 +262,17 @@ function FolderRow({
           className={CLASS.toggle}
         >
           {expanded ? "▾" : "▸"}
-        </button>
+        </Button>
       ) : (
         <span className={CLASS.spacer} />
       )}
 
       {isEditing ? (
-        <input
-          ref={inputRef}
-          defaultValue={node.name}
+        <TextInput
+          value={draft}
+          onChange={setDraft}
           autoFocus
+          onFocus={(e) => e.currentTarget.select()}
           aria-label="Folder name"
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => {
@@ -296,7 +297,9 @@ function FolderRow({
         )
       ) : !isEditing && (
         <div className={CLASS.actions}>
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             title="New subfolder"
             onClick={(e) => {
               e.stopPropagation();
@@ -305,10 +308,12 @@ function FolderRow({
             className={CLASS.action}
           >
             +
-          </button>
+          </Button>
           {!isRoot && (
             <>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 title="Rename folder"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -318,8 +323,10 @@ function FolderRow({
                 className={CLASS.action}
               >
                 ✎
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 title="Delete folder"
                 aria-label="Delete folder"
                 onClick={(e) => {
@@ -329,7 +336,7 @@ function FolderRow({
                 className={`${CLASS.action} ${CLASS.actionDanger}`}
               >
                 {"🗑"}
-              </button>
+              </Button>
             </>
           )}
           {node.count > 0 && <span className={CLASS.count}>{node.count}</span>}

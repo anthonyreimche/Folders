@@ -26,7 +26,6 @@ describe("activate", () => {
     activate(rig.api);
     expect(rig.stylesheets.map((s) => s.id)).toEqual([STYLESHEET_ID]);
     const css = rig.stylesheets[0].css;
-    expect(css).toContain(`:where(.${CLASS.open}) {`);
     expect(css).toContain(`:where(.${CLASS.row}) {`);
     expect(css).toContain(
       `:where(.${CLASS.rowActive}) { background-color: var(--color-surface-3); color: var(--color-text-primary); }`,
@@ -34,9 +33,8 @@ describe("activate", () => {
     expect(css).toContain(
       `:where(.${CLASS.rowDragOver}) { background-color: color-mix(in oklab, var(--color-accent) 20%, transparent); box-shadow: 0 0 0 1px var(--color-accent); }`,
     );
-    expect(css).toContain(`:where(.${CLASS.row}:hover .${CLASS.action}) { display: block; }`);
+    expect(css).toContain(`:where(.${CLASS.row}:hover .${CLASS.action}) { display: inline-flex; }`);
     expect(css).toContain(`:where(.${CLASS.actionDanger}:hover) { color: var(--color-label-red); }`);
-    expect(css).toContain(`:where(.${CLASS.open}:disabled) { opacity: 0.5; }`);
   });
 
   it("keeps every rule but Larger text at zero specificity", () => {
@@ -55,7 +53,7 @@ describe("activate", () => {
     const rig = fakeApi();
     activate(rig.api);
     const rule = rig.stylesheets[0].css.split("\n").find((line) => line.startsWith("html.sl-larger-text"));
-    for (const c of [CLASS.empty, CLASS.open, CLASS.row, CLASS.nameInput]) {
+    for (const c of [CLASS.empty, CLASS.row]) {
       expect(rule).toContain(`html.sl-larger-text .${c}`);
     }
     expect(rule).toContain("font-size: 13px !important; line-height: 1.45 !important;");

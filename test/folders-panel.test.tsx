@@ -57,7 +57,6 @@ describe("FoldersPanel with no project open", () => {
     const rig = mount({ tree: null });
     expect(screen.getByText(/Open a folder to start/).className).toBe(CLASS.empty);
     const open = screen.getByRole("button", { name: "Open Folder…" });
-    expect(open.className).toBe(CLASS.open);
     fireEvent.click(open);
     expect(rig.pickerOpens).toBe(1);
   });
@@ -152,6 +151,22 @@ describe("FoldersPanel tree", () => {
   });
 });
 
+describe("FoldersPanel controls come from the kit", () => {
+  it("draws Open Folder, the disclosure toggle and the row actions as kit buttons", () => {
+    mount();
+    const open = screen.getByRole("button", { name: "Open Folder…" });
+    expect(open.dataset.kit).toBe("button");
+    expect(open.dataset.kitSize).toBe("sm");
+    const actions = ["New subfolder", "Rename folder", "Delete folder"].map((n) => buttonIn(row("misc"), n)!);
+    for (const a of actions) {
+      expect(a.dataset.kitVariant).toBe("ghost");
+      expect(a.dataset.kitSize).toBe("sm");
+    }
+    const raw = [...document.querySelectorAll("button")].filter((b) => b.dataset.kit !== "button");
+    expect(raw).toEqual([]);
+  });
+});
+
 describe("FoldersPanel new subfolder and rename", () => {
   it("creates a uniquely named subfolder and opens it for renaming", async () => {
     const rig = mount({ tree: folder("", [folder("Untitled Folder")]) });
@@ -162,6 +177,7 @@ describe("FoldersPanel new subfolder and rename", () => {
     expect(rig.ui.getState().activeFolder).toBeNull();
     const input = screen.getByRole<HTMLInputElement>("textbox", { name: "Folder name" });
     expect(input.value).toBe("Untitled Folder 2");
+    expect(input.dataset.kit).toBe("text-input");
     expect(input.className).toBe(CLASS.nameInput);
     expect(document.activeElement).toBe(input);
     expect([input.selectionStart, input.selectionEnd]).toEqual([0, "Untitled Folder 2".length]);
